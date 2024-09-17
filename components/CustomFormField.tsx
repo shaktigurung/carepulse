@@ -7,7 +7,7 @@ import {
     FormLabel,
     FormMessage,
   } from "@/components/ui/form";
-import { Input } from "@/components/ui/input"
+import { Input } from "./ui/input"
 import { Control } from "react-hook-form";
 import { FormFieldType } from "./forms/PatientForm";
 import Image from "next/image";
@@ -16,6 +16,9 @@ import PhoneInput from 'react-phone-number-input'
 import { E164Number } from 'libphonenumber-js/core';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Textarea } from "./ui/textarea";
+import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
+import { Checkbox } from "./ui/checkbox";
 
 interface CustomProps {
     control: Control<any>,
@@ -25,7 +28,7 @@ interface CustomProps {
     placeholder ?: string
     iconSrc?: string,
     iconAlt?: string,
-    disbaled?: boolean,
+    disabled?: boolean,
     dateFormat?: string,
     showTimeSelect?: boolean,
     children?: React.ReactNode,
@@ -33,7 +36,7 @@ interface CustomProps {
 }
 
 const RenderField = ({field, props}: { field:any; props: CustomProps}) => {
-    const { fieldType, iconSrc, iconAlt, placeholder, showTimeSelect, dateFormat, renderSkeleton } = props;
+    const { fieldType, iconSrc, iconAlt, placeholder, showTimeSelect, dateFormat, renderSkeleton, disabled, children, name, label } = props;
     switch (fieldType) {
         case FormFieldType.INPUT:
             return(
@@ -92,6 +95,47 @@ const RenderField = ({field, props}: { field:any; props: CustomProps}) => {
                 </FormControl>
               </div>
             )
+        case FormFieldType.TEXTAREA:
+            return (
+                <FormControl>
+                  <Textarea
+                    placeholder={placeholder}
+                    {...field}
+                    className="shad-textArea"
+                    disabled={disabled}
+                  />
+                </FormControl>
+            );
+        case FormFieldType.SELECT:
+            return (
+                <FormControl>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                        <SelectTrigger className="shad-select-trigger">
+                            <SelectValue placeholder={placeholder} />
+                        </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="shad-select-content">
+                        {children}
+                    </SelectContent>
+                </Select>
+                </FormControl>
+            );
+        case FormFieldType.CHECKBOX:
+            return (
+                <FormControl>
+                <div className="flex items-center gap-4">
+                    <Checkbox
+                        id={name}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                    />
+                    <label htmlFor={name} className="checkbox-label">
+                        {label}
+                    </label>
+                </div>
+                </FormControl>
+            );
         case FormFieldType.SKELETON:
             return renderSkeleton ? renderSkeleton(field) : null;
         default:
@@ -103,18 +147,18 @@ const CustomFormField = (props: CustomProps) => {
     const { control, fieldType, name, label } = props;
     return (
     <FormField
-    control={control}
-    name={name}
-    render={({ field }) => (
-      <FormItem className="flex-1">
-        {fieldType !== FormFieldType.CHECKBOX && label &&(
-            <FormLabel>{label}</FormLabel>
+        control={control}
+        name={name}
+        render={({ field }) => (
+        <FormItem className="flex-1">
+            {fieldType !== FormFieldType.CHECKBOX && label &&(
+                <FormLabel>{label}</FormLabel>
+            )}
+        <RenderField field={field} props={props} />
+        <FormMessage className="shad-error" />
+        </FormItem>
         )}
-       <RenderField field={field} props={props} />
-       <FormMessage className="shad-error" />
-    </FormItem>
-    )}
-  />
+    />
   )
 }
 
