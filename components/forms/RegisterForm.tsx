@@ -109,8 +109,7 @@ const RegisterForm = ({ user }: {user: User }) => {
                 fieldType={FormFieldType.DATE_PICKER}
                 control={form.control}
                 name="birthDate"
-                label="Date of Birth"
-             
+                label="Date of Birth" 
             />
             <CustomFormField 
                 fieldType={FormFieldType.SKELETON}
